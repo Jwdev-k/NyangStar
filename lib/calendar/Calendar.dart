@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nyangstar/api/login/LoginApi.dart';
-import 'package:nyangstar/main.dart';
-import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
-  Calendar({super.key});
+  const Calendar({super.key});
 
   @override
   State<Calendar> createState() => _CalendarState();
@@ -62,85 +59,7 @@ class _CalendarState extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'NyangStar',
-          style: TextStyle(
-              fontFamily: 'HiMelody',
-              fontSize: 34,
-              fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor:
-        themeProvider.themeMode == ThemeMode.dark ? Colors.black12 : Colors
-            .white,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundImage: AssetImage(
-                  'images/profile_picture.png'), // replace with your profile image asset
-            ),
-          ),
-        ],
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            DrawerHeader(
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                    fontFamily: 'HiMelody',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () {
-                Navigator.of(context).pop(); // close the drawer
-                Navigator.of(context).pushNamed("/home");
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text('Diary'),
-              onTap: () {
-                Navigator.of(context).pop(); // close the drawer
-                Navigator.of(context).pushNamed("/diary");
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text('Calendar'),
-              onTap: () {
-                Navigator.of(context).pop(); // close the drawer
-                Navigator.of(context).pushNamed("/calendar");
-              },
-            ),
-            Spacer(),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {
-                Navigator.of(context).pop(); // close the drawer
-                Navigator.of(context).pushNamed("/settings");
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Logout'),
-              onTap: () {
-                LoginApi().signOut(context);
-              },
-            ),
-          ],
-        ),
-      ),
       body: Column(
         children: [
           TableCalendar(

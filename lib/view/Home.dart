@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:nyangstar/calendar/Calendar.dart';
+import 'package:nyangstar/diary/Diary.dart';
 import 'package:nyangstar/main.dart';
 import 'package:provider/provider.dart';
 
@@ -11,14 +13,31 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  int _selectedIndex = 0;
 
-  void _signOut() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text('로그아웃 처리가 정상적으로 되었습니다.'),
-          duration: Duration(seconds: 1)),
-    );
-    Navigator.of(context).pushNamedAndRemoveUntil("/login", (route) => false);
+  void _onItemTapped(int index) {
+    setState(() {
+      if(index == 3) { // 설정 메뉴 동작
+          _selectedIndex = 0;
+          Navigator.of(context).pushNamed("/settings");
+      } else {
+        _selectedIndex = index;
+      }
+    });
+  }
+
+  Widget _getSelectedPage(int index) {
+    // index 3 값은 Setting 메뉴.
+    switch (index) {
+      case 0:
+        return MainContents();
+      case 1:
+        return Diary();
+      case 2:
+        return Calendar();
+      default:
+        return MainContents();
+    }
   }
 
   @override
@@ -34,9 +53,9 @@ class _HomeState extends State<Home> {
               fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor:
-        themeProvider.themeMode == ThemeMode.dark ? Colors.black12 : Colors
-            .white,
+        backgroundColor: themeProvider.themeMode == ThemeMode.dark
+            ? Colors.black12
+            : Colors.white,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -47,59 +66,41 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            DrawerHeader(
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                    fontFamily: 'HiMelody',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () {
-                Navigator.of(context).pop(); // close the drawer
-                Navigator.of(context).pushNamed("/home");
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text('Diary'),
-              onTap: () {
-                Navigator.of(context).pop(); // close the drawer
-                Navigator.of(context).pushNamed("/diary");
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text('Calendar'),
-              onTap: () {
-                Navigator.of(context).pop(); // close the drawer
-                Navigator.of(context).pushNamed("/calendar");
-              },
-            ),
-            Spacer(),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {
-                Navigator.of(context).pop(); // close the drawer
-                Navigator.of(context).pushNamed("/settings");
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Logout'),
-              onTap: _signOut,
-            ),
-          ],
-        ),
+      body: _getSelectedPage(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Diary',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Calendar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        unselectedItemColor: themeProvider.themeMode == ThemeMode.dark ? Colors.white : Colors.black,
+        onTap: _onItemTapped,
       ),
+    );
+  }
+}
+
+class MainContents extends StatelessWidget {
+  const MainContents({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       body: Column(
         children: [
           // 상단 박스 안에 table.svg 배치
@@ -108,25 +109,25 @@ class _HomeState extends State<Home> {
             alignment: Alignment.center,
             child: Padding(
               padding: EdgeInsets.all(20.0),
-              child: SvgPicture.asset('svg/cat1.svg', width: 200, height: 200,),
+              child: SvgPicture.asset(
+                'svg/cat1.svg',
+                width: 200,
+                height: 200,
+              ),
             ),
           ),
           SizedBox(height: 20), // 상자와 나머지 컨텐츠 간의 간격 조정
-          // 프로필 사진
-          CircleAvatar(
-            radius: 30,
-            backgroundImage: AssetImage('images/profile_picture.png'),
-          ),
-          SizedBox(height: 10), // 프로필 사진과 입금 버튼 간의 간격 조정
           // 입금 버튼과 금액 입력란
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 프로필 사진
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {},
                 child: Text('입금'),
               ),
-              SizedBox(width: 10), // 버튼과 텍스트 필드 사이의 간격 조정
+              SizedBox(width: 10),
               Expanded(
                 child: TextFormField(
                   decoration: InputDecoration(

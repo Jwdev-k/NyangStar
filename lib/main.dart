@@ -4,31 +4,43 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nyangstar/api/login/LoginApi.dart';
 import 'package:nyangstar/calendar/Calendar.dart';
 import 'package:nyangstar/diary/Diary.dart';
-import 'package:nyangstar/settings/settings.dart';
+import 'package:nyangstar/settings/Settings.dart';
 import 'package:nyangstar/view/Home.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer' as developer;
 
 void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
-      child: MyApp(),
+      child: NyangStar(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NyangStar extends StatefulWidget {
+  @override
+  NyangStarState createState() => NyangStarState();
+}
 
-  // This widget is the root of your application.
+class NyangStarState extends State<NyangStar> {
+  Locale _locale = Locale('ko', 'KR'); // default korean
+
+  void setLocale(Locale value) {
+    setState(() {
+      _locale = value;
+      developer.log("현재 로케일 값: " + _locale.toString(), name: 'ChangeLocaleEvent');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     themeProvider._loadDarkMode();
     return MaterialApp(
       title: 'NyangStar',
-      locale: Locale('ko', 'KR'), // 애플리케이션 로케일 한국어 설정
+      locale: _locale, // 애플리케이션 기본 로케일 한국어 설정
       supportedLocales: [
         Locale('en', 'US'),
         Locale('ko', 'KR'),
@@ -46,7 +58,7 @@ class MyApp extends StatelessWidget {
       // 다크 테마
       home: LoginPage(),
       routes: {
-        '/settings': (context) => SettingsPage(),
+        '/settings': (context) => Settings(setLocale: setLocale),
         '/home': (context) => Home(),
         '/login': (context) => LoginPage(),
         '/diary' : (context) => Diary(),
@@ -87,7 +99,9 @@ class _LoginPageState extends State<LoginPage> {
           onTap: () async {
             LoginApi().signInWithGoogle(context);
           },
-          child: SvgPicture.asset('/svg/google-login-icon.svg'),
+          child: SvgPicture.asset('svg/google-login-icon.svg',
+              width: 100,
+              height: 100),
         ),
       ),
       floatingActionButton: FloatingActionButton(
